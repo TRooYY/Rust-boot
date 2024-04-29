@@ -1,10 +1,17 @@
 use clap::Parser;
-use rcli::{Opts, process_csv, Subcommand};
+use rcli::{Opts, process_csv, SubCommand};
 
 fn main() -> anyhow::Result<()> {
     let opt = Opts::parse();
     match opt.cmd {
-        Subcommand::Csv(opts) => process_csv(&opts.input, &opts.output)?,
+        SubCommand::Csv(opts) => {
+            let output = if let Some(output) = opts.output {
+                output.clone()
+            } else {
+                format!("output.{}", opts.format)
+            };
+            process_csv(&opts.input, output, opts.format)?;
+        }
     }
     Ok(())
 }
